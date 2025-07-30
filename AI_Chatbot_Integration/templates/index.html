@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini AI Chatbot</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="main-container">
+    <div class="chat-header">
+      <h2>💬 Gemini AI Chatbot</h2>
+      <p>Ask anything, get instant answers</p>
+    </div>
+    <div id="chat-box" class="chat-box"></div>
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Type your message here...">
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <script>
+  async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const chatBox = document.getElementById("chat-box");
+
+    // Show user message
+    chatBox.innerHTML += `<div class="message user"><span>You:</span> ${escapeHtml(message)}</div>`;
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Call the backend
+    const response = await fetch('/get_response', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+
+    const data = await response.json();
+    const botMessage = formatBotMessage(data.response);
+
+    // Show Gemini response with formatting
+    chatBox.innerHTML += `<div class="message bot"><span>Gemini:</span> ${botMessage}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Optional: escape HTML to avoid XSS
+  function escapeHtml(text) {
+    return text.replace(/[&<>"']/g, function(m) {
+      return ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      })[m];
+    });
+  }
+
+  // Format newlines and markdown-like bullets
+  function formatBotMessage(text) {
+    const formatted = escapeHtml(text)
+      .replace(/\n/g, '<br>') // line breaks
+      .replace(/\* \*\*(.*?)\*\*/g, '<strong>• $1</strong>'); // bold bullets
+    return `<p>${formatted}</p>`;
+  }
+
+  document.getElementById("user-input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+  });
+</script>
+
+</body>
+</html>
