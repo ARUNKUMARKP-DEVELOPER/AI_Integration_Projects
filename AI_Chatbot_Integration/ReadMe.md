@@ -4,6 +4,12 @@ This project is a fully functional AI chatbot web application built using the **
 
 ---
 
+## Result
+
+![Result Screenshot](screenshots/output.png)
+
+---
+
 ## 📌 Project Highlights
 
 - 🔗 **Gemini 1.5 Flash** model integration using `google-generativeai`
@@ -34,4 +40,5 @@ This project is a fully functional AI chatbot web application built using the **
 
 ```bash
 git clone https://github.com/your-username/gemini-chatbot.git
+
 cd gemini-chatbot
